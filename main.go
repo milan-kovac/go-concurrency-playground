@@ -2,24 +2,28 @@ package main
 
 import (
 	"fmt"
-	"sync"
-	"time"
+	"net/http"
+
+	simplegoroutine "github.com/milan-kovac/go-concurrency-playground/simple-goroutine"
 )
 
-func simpleGoroutine() {
-	var wg sync.WaitGroup
-	wg.Add(1)
+func simplegoroutineHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Simple goroutine")
 
-	go func() {
-		defer wg.Done()
-		time.Sleep(2 * time.Second)
-		fmt.Println("Simple print.")
-	}()
-
-	wg.Wait()
-	fmt.Println("Goroutine finished.")
+	simplegoroutine.Run()
 }
 
 func main() {
-	simpleGoroutine()
+	http.HandleFunc("/simple-goroutine", simplegoroutineHandler)
+
+	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	fmt.Println("Starting server on :8085")
+	err := http.ListenAndServe(":8085", nil)
+	if err != nil {
+		fmt.Println("Server error:", err)
+	}
+
 }
