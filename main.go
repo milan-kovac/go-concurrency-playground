@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	simplegoroutine "github.com/milan-kovac/go-concurrency-playground/simple-goroutine"
+	worker "github.com/milan-kovac/go-concurrency-playground/worker"
 )
 
 func simplegoroutineHandler(w http.ResponseWriter, r *http.Request) {
@@ -13,8 +14,16 @@ func simplegoroutineHandler(w http.ResponseWriter, r *http.Request) {
 	simplegoroutine.Run()
 }
 
+func workerHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Worker")
+
+	worker.Run()
+}
+
 func main() {
 	http.HandleFunc("/simple-goroutine", simplegoroutineHandler)
+
+	http.HandleFunc("/worker", workerHandler)
 
 	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
